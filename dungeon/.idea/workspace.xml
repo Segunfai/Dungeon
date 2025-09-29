@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6a3775e1-20fd-4705-a090-ce3c1dbe83f8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/core/Command.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/Game.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/InvalidCommandException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/SaveLoad.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/core/WorldInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/model/Entity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/model/GameState.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/model/Item.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/model/Key.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/model/Monster.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/model/Player.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/model/Potion.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/model/Room.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/model/Weapon.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="33NoNE7UZUSAnc4kxVxwX7sRHfD" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dungeon&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/Segunfai/IdeaProjects/Dungeon/src/Main.java&quot;
+  }
+}</component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6a3775e1-20fd-4705-a090-ce3c1dbe83f8" name="Changes" comment="" />
+      <created>1759166851869</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1759166851869</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="dungeon" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
