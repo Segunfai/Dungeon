@@ -28,7 +28,7 @@ public class Key extends Item {
         String doorToOpen = lockedDoors.getFirst();
         current.unlockDoor(doorToOpen);
 
-        System.out.println("🔓 Ключ " + getName() + " открыл дверь на " + doorToOpen + "!");
+        System.out.println("Ключ " + getName() + " открыл дверь на " + doorToOpen + "!");
         System.out.println("Теперь можно пройти в " + current.getNeighbors().get(doorToOpen).getName());
 
         // Убираем ключ из инвентаря после использования
