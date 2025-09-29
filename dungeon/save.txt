@@ -1,4 +1,4 @@
-player;27;5;5
-inventory;Potion:Малое зелье
+player;Герой;24;5
+inventory;Potion:Зелье из дропа
 room;Лес
-score;9
+score;27
