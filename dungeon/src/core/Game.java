@@ -22,7 +22,34 @@ public class Game {
     }
 
     private void registerCommands() {
-        commands.put("help", (ctx, a) -> System.out.println("Команды: " + String.join(", ", commands.keySet())));
+        //Изначальная реализация - команды в строку
+        //commands.put("help", (ctx, a) -> System.out.println("Команды: " + String.join(", ", commands.keySet())));
+
+        //Красивее и информативнее, но проще и более громоздко
+            commands.put("help", (ctx, a) -> {
+                System.out.println("===========================================");
+                System.out.println("|           ДОСТУПНЫЕ КОМАНДЫ             |");
+                System.out.println("|-----------------------------------------|");
+                System.out.println("| about     - информация о игре           |");
+                System.out.println("| look      - осмотреться в комнате       |");
+                System.out.println("| move      - перемещение между комнатами |");
+                System.out.println("| take      - взять предмет               |");
+                System.out.println("| inventory - показать инвентарь          |");
+                System.out.println("| use       - использовать предмет        |");
+                System.out.println("| fight     - сразиться с монстром        |");
+                System.out.println("| save      - сохранить игру              |");
+                System.out.println("| load      - загрузить игру              |");
+                System.out.println("| gc-stats  - статистика памяти           |");
+                System.out.println("| scores    - таблица лидеров             |");
+                System.out.println("| exit      - выход из игры               |");
+                System.out.println("| help      - эта справка                 |");
+                System.out.println("===========================================");
+                System.out.println();
+                System.out.println("  Примеры:");
+                System.out.println("  move north, take Малое зелье, use Зелье");
+                System.out.println();
+            });
+
         commands.put("gc-stats", (ctx, a) -> {
             Runtime rt = Runtime.getRuntime();
             long free = rt.freeMemory(), total = rt.totalMemory(), used = total - free;
@@ -50,12 +77,12 @@ public class Game {
                 System.out.println("   Поймано: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             }
 
-            // Ошибка компиляции (необходимо раскомментировать для проверок)
-            /*
+            // Ошибка компиляции
+
             System.out.println("2. Ошибка компиляции (пример):");
             System.out.println("   // String x = 123; // Не компилируется: несовместимые типы");
             System.out.println("   Эта ошибка обнаруживается на этапе компиляции");
-             */
+
         });
         commands.put("look", (ctx, a) -> System.out.println(ctx.getCurrent().describe()));
 
@@ -81,20 +108,36 @@ public class Game {
         //Реализация команды take
         commands.put("take", (ctx, a) -> {
             if (a.isEmpty()) {
-                throw new InvalidCommandException("Укажите название предмета");
+                throw new InvalidCommandException("Укажите название предмета. Пример: take Малое зелье");
             }
 
+            // Объединяем все аргументы в одну строку
             String itemName = String.join(" ", a);
+            System.out.println("Поиск предмета: '" + itemName + "'");
+
             Room current = ctx.getCurrent();
             Player player = ctx.getPlayer();
 
-            // Ищем предмет в комнате
+            // Отладочная информация
+            System.out.println("Предметы в комнате: " +
+                    (current.getItems().isEmpty() ? "нет" :
+                            current.getItems().stream().map(Item::getName).collect(Collectors.joining(", "))));
+
+            // Ищем предмет в комнате (регистронезависимый поиск)
             Optional<Item> foundItem = current.getItems().stream()
                     .filter(item -> item.getName().equalsIgnoreCase(itemName))
                     .findFirst();
 
             if (foundItem.isEmpty()) {
-                throw new InvalidCommandException("Предмет не найден: " + itemName);
+                // Покажем какие предметы есть в комнате
+                if (current.getItems().isEmpty()) {
+                    throw new InvalidCommandException("В комнате нет предметов");
+                } else {
+                    String availableItems = current.getItems().stream()
+                            .map(Item::getName)
+                            .collect(Collectors.joining(", "));
+                    throw new InvalidCommandException("Предмет '" + itemName + "' не найден. Доступные предметы: " + availableItems);
+                }
             }
 
             Item item = foundItem.get();
@@ -102,6 +145,21 @@ public class Game {
             player.getInventory().add(item);
 
             System.out.println("Взято: " + item.getName());
+        });
+
+        commands.put("debug", (ctx, a) -> {
+            Room current = ctx.getCurrent();
+            Player player = ctx.getPlayer();
+
+            System.out.println("=== ОТЛАДОЧНАЯ ИНФОРМАЦИЯ ===");
+            System.out.println("Комната: " + current.getName());
+            System.out.println("Предметы в комнате: " + current.getItems().size());
+            current.getItems().forEach(item ->
+                    System.out.println("  - '" + item.getName() + "' (класс: " + item.getClass().getSimpleName() + ")")
+            );
+            System.out.println("Игрок: " + player.getName());
+            System.out.println("Инвентарь: " + player.getInventory().size() + " предметов");
+            System.out.println("============================");
         });
 
         //Реализация инвентаря
@@ -155,17 +213,26 @@ public class Game {
             String itemName = String.join(" ", a);
             Player player = ctx.getPlayer();
 
-            // Ищем предмет в инвентаре
+            // Ищем предмет в инвентаре (регистронезависимый поиск)
             Optional<Item> foundItem = player.getInventory().stream()
                     .filter(item -> item.getName().equalsIgnoreCase(itemName))
                     .findFirst();
 
             if (foundItem.isEmpty()) {
-                throw new InvalidCommandException("Предмет не найден в инвентаре: " + itemName);
+                // Покажем что есть в инвентаре
+                if (player.getInventory().isEmpty()) {
+                    throw new InvalidCommandException("Инвентарь пуст");
+                } else {
+                    String inventoryItems = player.getInventory().stream()
+                            .map(Item::getName)
+                            .collect(Collectors.joining(", "));
+                    throw new InvalidCommandException("Предмет не найден в инвентаре. Ваш инвентарь: " + inventoryItems);
+                }
             }
 
             Item item = foundItem.get();
-            item.apply(ctx); // Полиморфизм - каждый предмет сам знает, что делать
+            System.out.println("Используется: " + item.getName());
+            item.apply(ctx);
         });
 
         //Реализация битвы
@@ -220,11 +287,28 @@ public class Game {
             }
         });
 
+        //Реализация команды About
+        commands.put("about", (ctx, a) -> {
+            System.out.println("================================");
+            System.out.println("|         DUNGEON MINI         |");
+            System.out.println("|------------------------------|");
+            System.out.println("| Версия игры: 1.0             |");
+            System.out.println("| Java: " + System.getProperty("java.version") + "                 |");
+            System.out.println("| " + System.getProperty("java.vendor") + "            |");
+            System.out.println("|                              |");
+            System.out.println("| Разработано для обучения     |");
+            System.out.println("================================");
+        });
+
         commands.put("save", (ctx, a) -> SaveLoad.save(ctx));
         commands.put("load", (ctx, a) -> SaveLoad.load(ctx));
         commands.put("scores", (ctx, a) -> SaveLoad.printScores());
         commands.put("exit", (ctx, a) -> {
-            System.out.println("Пока!");
+            System.out.println("+-------------------------------+");
+            System.out.println("|    До новых встреч, герой!   |");
+            System.out.println("|  Подземелья ждут твоего      |");
+            System.out.println("|      возвращения...          |");
+            System.out.println("+-------------------------------+");
             System.exit(0);
         });
     }
@@ -247,13 +331,40 @@ public class Game {
         state.setCurrent(square);
     }
 
+    private boolean isRussianLayoutMistake(String input) {
+        // Если строка состоит из русских букв, но похожа на английскую команду
+        return input.matches("[а-яё]+") && input.length() >= 2;
+    }
+
+    private String fixKeyboardLayout(String russianText) {
+        Map<Character, Character> layoutMap = Map.ofEntries(
+                Map.entry('й', 'q'), Map.entry('ц', 'w'), Map.entry('у', 'e'), Map.entry('к', 'r'),
+                Map.entry('е', 't'), Map.entry('н', 'y'), Map.entry('г', 'u'), Map.entry('ш', 'i'),
+                Map.entry('щ', 'o'), Map.entry('з', 'p'), Map.entry('х', '['), Map.entry('ъ', ']'),
+                Map.entry('ф', 'a'), Map.entry('ы', 's'), Map.entry('в', 'd'), Map.entry('а', 'f'),
+                Map.entry('п', 'g'), Map.entry('р', 'h'), Map.entry('о', 'j'), Map.entry('л', 'k'),
+                Map.entry('д', 'l'), Map.entry('ж', ';'), Map.entry('э', '\''),
+                Map.entry('я', 'z'), Map.entry('ч', 'x'), Map.entry('с', 'c'), Map.entry('м', 'v'),
+                Map.entry('и', 'b'), Map.entry('т', 'n'), Map.entry('ь', 'm'), Map.entry('б', ','),
+                Map.entry('ю', '.')
+        );
+
+        StringBuilder result = new StringBuilder();
+        for (char c : russianText.toCharArray()) {
+            result.append(layoutMap.getOrDefault(c, c));
+        }
+        return result.toString();
+    }
+
     public void run() {
-        System.out.println("╔══════════════════════════════╗");
-        System.out.println("║         DUNGEON MINI         ║");
-        System.out.println("║    Подземные приключения     ║");
-        System.out.println("╚══════════════════════════════╝");
+        System.out.println("=================================");
+        System.out.println("|         DUNGEON MINI         |");
+        System.out.println("|    Подземные приключения     |");
+        System.out.println("=================================");
         System.out.println("Введите 'help' для помощи");
         System.out.println();
+
+
         try (BufferedReader in = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
                 System.out.print("> ");
@@ -264,8 +375,19 @@ public class Game {
                 List<String> parts = Arrays.asList(line.split("\s+"));
                 String cmd = parts.getFirst().toLowerCase(Locale.ROOT);
                 List<String> args = parts.subList(1, parts.size());
+
                 Command c = commands.get(cmd);
                 try {
+                    if (commands.get(cmd) == null && isRussianLayoutMistake(cmd)) {
+                        String correctCmd = fixKeyboardLayout(cmd);
+                        if (commands.get(correctCmd) != null) {
+                            throw new InvalidCommandException(
+                                    "Команда '" + cmd + "' не найдена. " +
+                                            "Возможно, вы имели в виду '" + correctCmd + "'? " +
+                                            "Проверьте раскладку клавиатуры!"
+                            );
+                        }
+                    }
                     if (c == null) throw new InvalidCommandException("Неизвестная команда: " + cmd);
                     c.execute(state, args);
                     state.addScore(1);

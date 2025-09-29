@@ -1,0 +1,4 @@
+player;27;5;5
+inventory;Potion:Малое зелье
+room;Лес
+score;9

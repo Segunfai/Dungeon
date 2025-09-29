@@ -17,15 +17,49 @@ public class SaveLoad {
             Player p = s.getPlayer();
             w.write("player;" + p.getName() + ";" + p.getHp() + ";" + p.getAttack());
             w.newLine();
-            String inv = p.getInventory().stream().map(i -> i.getClass().getSimpleName() + ":" + i.getName()).collect(Collectors.joining(","));
+
+            String inv = p.getInventory().stream()
+                    .map(i -> i.getClass().getSimpleName() + ":" + i.getName())
+                    .collect(Collectors.joining(","));
             w.write("inventory;" + inv);
             w.newLine();
+
+            // СОХРАНЯЕМ ТЕКУЩУЮ КОМНАТУ
             w.write("room;" + s.getCurrent().getName());
             w.newLine();
-            System.out.println("Сохранено в " + SAVE.toAbsolutePath());
+
+            // СОХРАНЯЕМ СЧЕТ
+            w.write("score;" + s.getScore());
+            w.newLine();
+
+            System.out.println("Игра сохранена в " + SAVE.toAbsolutePath());
             writeScore(p.getName(), s.getScore());
+
         } catch (IOException e) {
             throw new UncheckedIOException("Не удалось сохранить игру", e);
+        }
+    }
+
+    private static void restoreCurrentRoom(GameState s, String roomName) {
+        // Простой способ - создаем комнаты как в bootstrapWorld()
+        Room square = new Room("Площадь", "Каменная площадь с фонтаном.");
+        Room forest = new Room("Лес", "Шелест листвы и птичий щебет.");
+        Room cave = new Room("Пещера", "Темно и сыро.");
+
+        square.getNeighbors().put("north", forest);
+        forest.getNeighbors().put("south", square);
+        forest.getNeighbors().put("east", cave);
+        cave.getNeighbors().put("west", forest);
+
+        // Восстанавливаем предметы и монстров
+        forest.getItems().add(new Potion("Малое зелье", 5));
+        forest.setMonster(new Monster("Волк", 1, 8));
+
+        // Устанавливаем текущую комнату
+        switch (roomName) {
+            case "Лес" -> s.setCurrent(forest);
+            case "Пещера" -> s.setCurrent(cave);
+            default -> s.setCurrent(square); // По умолчанию площадь
         }
     }
 
@@ -34,31 +68,51 @@ public class SaveLoad {
             System.out.println("Сохранение не найдено.");
             return;
         }
+
         try (BufferedReader r = Files.newBufferedReader(SAVE)) {
             Map<String, String> map = new HashMap<>();
             for (String line; (line = r.readLine()) != null; ) {
                 String[] parts = line.split(";", 2);
-                if (parts.length == 2) map.put(parts[0], parts[1]);
+                if (parts.length == 2) {
+                    map.put(parts[0], parts[1]);
+                }
             }
+
             Player p = s.getPlayer();
-            String[] pp = map.getOrDefault("player", "player;Hero;10;3").split(";");
-            p.setName(pp[1]);
-            p.setHp(Integer.parseInt(pp[2]));
-            p.setAttack(Integer.parseInt(pp[3]));
+
+            // Загружаем данные игрока
+            String[] playerData = map.getOrDefault("player", "Hero;10;3").split(";");
+            p.setName(playerData[0]);
+            p.setHp(Integer.parseInt(playerData[1]));
+            p.setAttack(Integer.parseInt(playerData[2]));
+
+            // Очищаем и загружаем инвентарь
             p.getInventory().clear();
             String inv = map.getOrDefault("inventory", "");
-            if (!inv.isBlank()) for (String tok : inv.split(",")) {
-                String[] t = tok.split(":", 2);
-                if (t.length < 2) continue;
-                switch (t[0]) {
-                    case "Potion" -> p.getInventory().add(new Potion(t[1], 5));
-                    case "Key" -> p.getInventory().add(new Key(t[1]));
-                    case "Weapon" -> p.getInventory().add(new Weapon(t[1], 3));
-                    default -> {
+            if (!inv.isBlank()) {
+                for (String tok : inv.split(",")) {
+                    String[] itemData = tok.split(":", 2);
+                    if (itemData.length < 2) continue;
+
+                    switch (itemData[0]) {
+                        case "Potion" -> p.getInventory().add(new Potion(itemData[1], 5));
+                        case "Key" -> p.getInventory().add(new Key(itemData[1]));
+                        case "Weapon" -> p.getInventory().add(new Weapon(itemData[1], 3));
+                        default -> {}
                     }
                 }
             }
-            System.out.println("Игра загружена (упрощённо).");
+
+            // ВОССТАНАВЛИВАЕМ ТЕКУЩУЮ КОМНАТУ
+            String roomName = map.getOrDefault("room", "Площадь");
+            restoreCurrentRoom(s, roomName);
+
+            // ВОССТАНАВЛИВАЕМ СЧЕТ
+            String scoreStr = map.getOrDefault("score", "0");
+            s.addScore(Integer.parseInt(scoreStr) - s.getScore()); // Устанавливаем точное значение
+
+            System.out.println("Игра загружена! Комната: " + roomName);
+
         } catch (IOException e) {
             throw new UncheckedIOException("Не удалось загрузить игру", e);
         }

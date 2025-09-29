@@ -1,10 +1,7 @@
 @echo off
-setlocal
-set ROOT=%~dp0
-set OUT=%ROOT%out
+chcp 1251 > nul
+cd /d "%~dp0"
 
-chcp 65001 > nul
-
-java -Dfile.encoding=UTF-8 -cp "%OUT%" Main
+java -Dfile.encoding=windows-1251 -cp "out" Main
 
 pause
