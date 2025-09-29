@@ -72,7 +72,7 @@ public class Game {
 
             Runtime rt = Runtime.getRuntime();
             long beforeMemory = rt.totalMemory() - rt.freeMemory();
-            System.out.println("Память ДО: " + beforeMemory / 1024 + " KB");
+            System.out.println("Используемая память ДО очистки: " + beforeMemory / 1024 + " KB");
 
             // Принудительно вызываем GC
             System.gc();
@@ -85,7 +85,7 @@ public class Game {
             }
 
             long afterMemory = rt.totalMemory() - rt.freeMemory();
-            System.out.println("Память ПОСЛЕ: " + afterMemory / 1024 + " KB");
+            System.out.println("Используемая память ПОСЛЕ очистки: " + afterMemory / 1024 + " KB");
             System.out.println("Очищено: " + (beforeMemory - afterMemory) / 1024 + " KB");
         });
 
