@@ -40,6 +40,7 @@ public class Game {
                 System.out.println("| save      - сохранить игру              |");
                 System.out.println("| load      - загрузить игру              |");
                 System.out.println("| gc-stats  - статистика памяти           |");
+                System.out.println("| gc-force  - очистка памяти              |");
                 System.out.println("| scores    - таблица лидеров             |");
                 System.out.println("| exit      - выход из игры               |");
                 System.out.println("| help      - эта справка                 |");
@@ -64,6 +65,28 @@ public class Game {
                 garbage.add("String object " + i);
             }
             System.out.println("Создано 100000 объектов. GC должен их очистить.");
+        });
+
+        commands.put("gc-force", (ctx, a) -> {
+            System.out.println("Принудительный вызов Garbage Collector...");
+
+            Runtime rt = Runtime.getRuntime();
+            long beforeMemory = rt.totalMemory() - rt.freeMemory();
+            System.out.println("Память ДО: " + beforeMemory / 1024 + " KB");
+
+            // Принудительно вызываем GC
+            System.gc();
+
+            // Даем время на выполнение
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            long afterMemory = rt.totalMemory() - rt.freeMemory();
+            System.out.println("Память ПОСЛЕ: " + afterMemory / 1024 + " KB");
+            System.out.println("Очищено: " + (beforeMemory - afterMemory) / 1024 + " KB");
         });
 
         commands.put("demo-errors", (ctx, a) -> {
