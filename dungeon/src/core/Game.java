@@ -248,7 +248,12 @@ public class Game {
     }
 
     public void run() {
-        System.out.println("DungeonMini (TEMPLATE). 'help' — команды.");
+        System.out.println("╔══════════════════════════════╗");
+        System.out.println("║         DUNGEON MINI         ║");
+        System.out.println("║    Подземные приключения     ║");
+        System.out.println("╚══════════════════════════════╝");
+        System.out.println("Введите 'help' для помощи");
+        System.out.println();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(System.in))) {
             while (true) {
                 System.out.print("> ");
