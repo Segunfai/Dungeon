@@ -9,6 +9,25 @@ public class Room {
     private final List<Item> items = new ArrayList<>();
     private Monster monster;
 
+    //Добавление двери, закрытой ключом
+    private final Map<String, Boolean> lockedDoors = new HashMap<>();
+
+    public Map<String, Boolean> getLockedDoors() {
+        return lockedDoors;
+    }
+
+    public boolean isDoorLocked(String direction) {
+        return lockedDoors.getOrDefault(direction, false);
+    }
+
+    public void lockDoor(String direction) {
+        lockedDoors.put(direction, true);
+    }
+
+    public void unlockDoor(String direction) {
+        lockedDoors.put(direction, false);
+    }
+
     public Room(String name, String description) {
         this.name = name;
         this.description = description;
@@ -36,6 +55,7 @@ public class Room {
 
     public String describe() {
         StringBuilder sb = new StringBuilder(name + ": " + description);
+
         if (!items.isEmpty()) {
             sb.append("\nПредметы: ").append(String.join(", ", items.stream().map(Item::getName).toList()));
         }
@@ -43,7 +63,16 @@ public class Room {
             sb.append("\nВ комнате монстр: ").append(monster.getName()).append(" (ур. ").append(monster.getLevel()).append(")");
         }
         if (!neighbors.isEmpty()) {
-            sb.append("\nВыходы: ").append(String.join(", ", neighbors.keySet()));
+            sb.append("\nВыходы: ");
+            List<String> exits = new ArrayList<>();
+            for (String dir : neighbors.keySet()) {
+                if (isDoorLocked(dir)) {
+                    exits.add(dir + " [ЗАКРЫТО]");
+                } else {
+                    exits.add(dir);
+                }
+            }
+            sb.append(String.join(", ", exits));
         }
         return sb.toString();
     }

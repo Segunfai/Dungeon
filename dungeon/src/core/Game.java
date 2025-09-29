@@ -100,6 +100,11 @@ public class Game {
                 throw new InvalidCommandException("Нет пути в направлении: " + direction);
             }
 
+            // Проверяем, закрыта ли дверь
+            if (current.isDoorLocked(direction)) {
+                throw new InvalidCommandException("Дверь в направлении " + direction + " закрыта. Нужен ключ!");
+            }
+
             ctx.setCurrent(nextRoom);
             System.out.println("Вы перешли в: " + nextRoom.getName());
             System.out.println(nextRoom.describe());
@@ -320,13 +325,24 @@ public class Game {
         Room square = new Room("Площадь", "Каменная площадь с фонтаном.");
         Room forest = new Room("Лес", "Шелест листвы и птичий щебет.");
         Room cave = new Room("Пещера", "Темно и сыро.");
+        //Добавление новой комнаты
+        Room throneRoom = new Room("Зал великой славы",
+                "Величественный зал с золотым троном. На троне лежит Меч легендарного героя!");
         square.getNeighbors().put("north", forest);
         forest.getNeighbors().put("south", square);
         forest.getNeighbors().put("east", cave);
         cave.getNeighbors().put("west", forest);
+        cave.getNeighbors().put("north", throneRoom);
+        throneRoom.getNeighbors().put("south", cave);
+
+        // Закрываем дверь из пещеры в тронный зал
+        cave.lockDoor("north");
 
         forest.getItems().add(new Potion("Малое зелье", 5));
         forest.setMonster(new Monster("Волк", 1, 8));
+        cave.setMonster(new Monster("Гоблин", 2, 12));
+        cave.getItems().add(new Key("Старый ключ"));
+        throneRoom.getItems().add(new Weapon("Меч легендарного героя", 10));
 
         state.setCurrent(square);
     }
